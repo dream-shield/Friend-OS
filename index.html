@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FriendOS</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!--
+        FRIEND_OS
+        =========
+
+        A birthday puzzle experience disguised as a strange old desktop OS.
+
+        Design goals:
+        - Feel like a believable late-90s / early-2000s computer.
+        - Keep the birthday theme hidden behind the "verification" premise.
+        - Make exploration itself fun, not just the individual puzzles.
+        - Keep puzzle content separate from the operating-system code.
+    -->
+
+    <div id="crt">
+        <div id="scanlines"></div>
+        <div id="screen-noise"></div>
+
+        <!-- BOOT SCREEN --------------------------------------------------- -->
+        <section id="boot-screen">
+            <div class="boot-logo">FRIEND<span>_OS</span></div>
+            <div class="boot-subtitle">PERSONAL COMPUTER SYSTEM</div>
+
+            <div class="boot-box">
+                <div>Memory Test .................... <span>640K OK</span></div>
+                <div>System Check ................... <span>OK</span></div>
+                <div>Verification Module ........... <span>LOADED</span></div>
+                <div>Birthday Protocol .............. <span>LOCKED</span></div>
+            </div>
+
+            <div class="boot-progress">
+                <div id="boot-progress-fill"></div>
+            </div>
+
+            <div id="boot-status">Starting system...</div>
+        </section>
+
+        <!-- DESKTOP ------------------------------------------------------- -->
+        <main id="desktop" class="hidden">
+
+            <header id="desktop-brand">
+                <span>FRIEND_OS</span>
+                <span id="desktop-build">build 0.1.7</span>
+            </header>
+
+            <section id="desktop-icons">
+                <button class="desktop-icon" data-open-window="verification-window">
+                    <span class="icon-image icon-computer"></span>
+                    <span class="icon-label">Verification<br>Center</span>
+                </button>
+
+                <button class="desktop-icon" data-open-window="files-window">
+                    <span class="icon-image icon-folder"></span>
+                    <span class="icon-label">My Files</span>
+                </button>
+
+                <button class="desktop-icon" data-open-window="terminal-window">
+                    <span class="icon-image icon-terminal"></span>
+                    <span class="icon-label">Terminal</span>
+                </button>
+
+                <button class="desktop-icon" data-open-window="readme-window">
+                    <span class="icon-image icon-paper"></span>
+                    <span class="icon-label">README.TXT</span>
+                </button>
+
+                <button class="desktop-icon" data-open-window="recycle-window">
+                    <span class="icon-image icon-trash"></span>
+                    <span class="icon-label">Recycle Bin</span>
+                </button>
+            </section>
+
+            <!-- STATUS WIDGET -->
+            <section id="system-widget" class="desktop-widget">
+                <div class="widget-title">SYSTEM STATUS</div>
+                <div class="widget-line"><span>USER</span><strong id="system-user">UNKNOWN</strong></div>
+                <div class="widget-line"><span>ACCESS</span><strong id="system-access">RESTRICTED</strong></div>
+                <div class="widget-line"><span>TESTS</span><strong id="system-tests">0 / 10</strong></div>
+            </section>
+
+            <!-- WELCOME WINDOW -->
+            <section id="welcome-window" class="window welcome-window">
+                <header class="window-titlebar">
+                    <div class="window-title">
+                        <span class="title-app-icon">●</span>
+                        FriendOS Setup
+                    </div>
+                    <div class="window-controls">
+                        <button class="window-control minimize-control" aria-label="Minimize">_</button>
+                        <button class="window-control close-control" data-close-window="welcome-window" aria-label="Close">X</button>
+                    </div>
+                </header>
+
+                <div class="window-body">
+                    <div class="welcome-hero">
+                        <div class="hero-mark">F</div>
+                        <div>
+                            <div class="hero-title">Welcome to FriendOS.</div>
+                            <div class="hero-subtitle">An unauthorized user has been detected.</div>
+                        </div>
+                    </div>
+
+                    <div class="inset-panel">
+                        <div class="panel-heading">SECURITY NOTICE</div>
+                        <p>
+                            This computer contains restricted personal data.
+                            Identity verification is required before access can be granted.
+                        </p>
+                        <p class="muted">
+                            No technical knowledge is required. Just pay attention.
+                        </p>
+                    </div>
+
+                    <div class="welcome-stats">
+                        <div><span>STATUS</span><strong>RESTRICTED</strong></div>
+                        <div><span>TESTS</span><strong>10</strong></div>
+                        <div><span>NETWORK</span><strong>OFFLINE</strong></div>
+                    </div>
+
+                    <div class="window-footer-actions">
+                        <button class="retro-button" id="start-verification-button">BEGIN VERIFICATION</button>
+                        <button class="retro-button secondary" data-close-window="welcome-window">CANCEL</button>
+                    </div>
+                </div>
+
+                <footer class="window-statusbar">
+                    <span>FriendOS Identity Services</span>
+                    <span>Ready</span>
+                </footer>
+            </section>
+
+            <!-- VERIFICATION WINDOW -->
+            <section id="verification-window" class="window verification-window">
+                <header class="window-titlebar">
+                    <div class="window-title">
+                        <span class="title-app-icon">✓</span>
+                        Verification Center
+                    </div>
+                    <div class="window-controls">
+                        <button class="window-control minimize-control">_</button>
+                        <button class="window-control close-control" data-close-window="verification-window">X</button>
+                    </div>
+                </header>
+
+                <div class="window-body verification-body">
+                    <div class="verification-topline">
+                        <div>
+                            <div class="eyebrow">IDENTITY SERVICE</div>
+                            <h2 id="puzzle-title">Verification Test</h2>
+                            <p id="puzzle-description">Loading verification test...</p>
+                        </div>
+                        <div id="test-counter" class="test-counter">01 / 04</div>
+                    </div>
+
+                    <div id="puzzle-area"></div>
+                    <div id="puzzle-hint" class="puzzle-hint" hidden></div>
+
+                    <div class="verification-footer">
+                        <span id="verification-status">STATUS: WAITING</span>
+                        <button class="retro-button" id="show-hint-btn" style="padding: 1px 6px; font-size: 10px; margin: 0 4px;">HELP</button>
+                        <span id="verification-progress">ACCESS 0%</span>
+                    </div>
+                </div>
+
+                <footer class="window-statusbar">
+                    <span>Verification Center</span>
+                    <span id="verification-footer-status">Restricted</span>
+                </footer>
+            </section>
+
+            <!-- FILES WINDOW -->
+            <section id="files-window" class="window files-window">
+                <header class="window-titlebar">
+                    <div class="window-title">
+                        <span class="title-app-icon">▣</span>
+                        My Files
+                    </div>
+                    <div class="window-controls">
+                        <button class="window-control minimize-control">_</button>
+                        <button class="window-control close-control" data-close-window="files-window">X</button>
+                    </div>
+                </header>
+
+                <div class="window-menu-bar">
+                    <div class="menu-item">View
+                        <div class="menu-dropdown">
+                            <button id="menu-folder-options">Folder Options...</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="window-body file-manager">
+                    <div class="path-bar">
+                        <span>Location:</span>
+                        <div class="path-field">C:\FRIEND_OS\</div>
+                    </div>
+
+                    <div id="file-list" class="file-list">
+                        <button class="file-row" data-open-readme>
+                            <span class="file-icon icon-paper small"></span>
+                            <span class="file-name">README.TXT</span>
+                            <span class="file-type">Text File</span>
+                        </button>
+
+                        <button class="file-row" data-open-logs>
+                            <span class="file-icon icon-paper small"></span>
+                            <span class="file-name">SYSTEM.LOG</span>
+                            <span class="file-type">Log File</span>
+                        </button>
+
+                        <button class="file-row" data-open-window="verification-window">
+                            <span class="file-icon icon-disk small"></span>
+                            <span class="file-name">VERIFY.EXE</span>
+                            <span class="file-type">Application</span>
+                        </button>
+
+                        <button class="file-row locked-file" id="birthday-file">
+                            <span class="file-icon icon-lock small"></span>
+                            <span class="file-name">BIRTHDAY.DAT</span>
+                            <span class="file-type">Restricted Data</span>
+                        </button>
+
+                        <button class="file-row hidden-file" id="secret-file">
+                            <span class="file-icon icon-paper small"></span>
+                            <span class="file-name">NOTES.TXT</span>
+                            <span class="file-type">Text File</span>
+                        </button>
+                    </div>
+
+                    <div class="file-manager-footer">
+                        <span id="file-count">4 objects</span>
+                        <span>Local disk</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TERMINAL WINDOW -->
+            <section id="terminal-window" class="window terminal-window">
+                <header class="window-titlebar">
+                    <div class="window-title">
+                        <span class="title-app-icon">&gt;_</span>
+                        FriendOS Terminal
+                    </div>
+                    <div class="window-controls">
+                        <button class="window-control minimize-control">_</button>
+                        <button class="window-control close-control" data-close-window="terminal-window">X</button>
+                    </div>
+                </header>
+
+                <div class="window-body terminal-body">
+                    <div id="terminal-output" class="terminal-output"></div>
+
+                    <div class="terminal-input-row">
+                        <span class="terminal-prompt">&gt;</span>
+                        <input id="terminal-input" type="text" autocomplete="off" spellcheck="false">
+                    </div>
+                </div>
+            </section>
+
+            <!-- README -->
+            <section id="readme-window" class="window readme-window">
+                <header class="window-titlebar">
+                    <div class="window-title">
+                        <span class="title-app-icon">TXT</span>
+                        README.TXT - Notepad
+                    </div>
+                    <div class="window-controls">
+                        <button class="window-control close-control" data-close-window="readme-window">X</button>
+                    </div>
+                </header>
+
+                <div class="window-body notepad-body">
+<pre>FRIEND_OS
+=========
+
+This computer contains a series of
+verification tests.
+
+Complete the tests to gain access
+to restricted files.
+
+Some files may be useful.
+Some may not be.
+
+Good luck.
+
+- SYSTEM ADMIN</pre>
+                </div>
+
+                <footer class="window-statusbar">
+                    <span>Ln 1, Col 1</span>
+                    <span>100%</span>
+                </footer>
+            </section>
+
+            <!-- SYSTEM LOG -->
+            <section id="logs-window" class="window logs-window">
+                <header class="window-titlebar">
+                    <div class="window-title">
+                        <span class="title-app-icon">LOG</span>
+                        SYSTEM.LOG - Notepad
+                    </div>
+                    <div class="window-controls">
+                        <button class="window-control close-control" data-close-window="logs-window">X</button>
+                    </div>
+                </header>
+
+                <div class="window-body notepad-body">
+                    <pre id="system-log"></pre>
+                </div>
+            </section>
+
+            <!-- RECYCLE BIN -->
+            <section id="recycle-window" class="window recycle-window">
+                <header class="window-titlebar">
+                    <div class="window-title">
+                        <span class="title-app-icon">BIN</span>
+                        Recycle Bin
+                    </div>
+                    <div class="window-controls">
+                        <button class="window-control minimize-control">_</button>
+                        <button class="window-control close-control" data-close-window="recycle-window">X</button>
+                    </div>
+                </header>
+
+                <div class="window-body file-manager">
+                    <div class="path-bar">
+                        <span>Location:</span>
+                        <div class="path-field">RECYCLE_BIN:\</div>
+                    </div>
+
+                    <div id="recycle-list" class="file-list" style="min-height: 180px;">
+                        <!-- Populate dynamically: DELETED_KEY.TXT -->
+                    </div>
+
+                    <div class="file-manager-footer">
+                        <span id="recycle-count">1 objects</span>
+                        <button class="retro-button" id="empty-recycle-btn" style="padding: 2px 8px; font-size: 10px;">Empty Bin</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PASSWORD DIALOG -->
+            <section id="password-dialog" class="window password-dialog" style="display: none; width: 320px; z-index: 6000;">
+                <header class="window-titlebar">
+                    <div class="window-title">
+                        <span class="title-app-icon">🔒</span>
+                        Enter Password
+                    </div>
+                    <div class="window-controls">
+                        <button class="window-control close-control" id="password-dialog-close">X</button>
+                    </div>
+                </header>
+                <div class="window-body">
+                    <p id="password-dialog-prompt">This file is encrypted. Enter password:</p>
+                    <input type="password" id="password-dialog-input" style="width: 100%; padding: 5px; border: 2px inset #fff; margin-bottom: 10px; background: #fff; color: #000;">
+                    <div class="window-footer-actions">
+                        <button class="retro-button" id="password-dialog-ok">OK</button>
+                        <button class="retro-button secondary" id="password-dialog-cancel">Cancel</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- FOLDER OPTIONS DIALOG -->
+            <section id="folder-options-dialog" class="window folder-options-dialog" style="display: none; width: 340px; z-index: 6000;">
+                <header class="window-titlebar">
+                    <div class="window-title">
+                        <span class="title-app-icon">⚙</span>
+                        Folder Options
+                    </div>
+                    <div class="window-controls">
+                        <button class="window-control close-control" id="folder-options-close">X</button>
+                    </div>
+                </header>
+                <div class="window-body">
+                    <fieldset style="border: 2px solid var(--window-dark); padding: 12px; margin-bottom: 12px; background: var(--window);">
+                        <legend style="background: var(--window); padding: 0 6px; font-weight: bold;">View Settings</legend>
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: default; user-select: none;">
+                            <input type="checkbox" id="show-hidden-checkbox">
+                            Show hidden files and folders
+                        </label>
+                    </fieldset>
+                    <div class="window-footer-actions">
+                        <button class="retro-button" id="folder-options-ok">OK</button>
+                        <button class="retro-button secondary" id="folder-options-cancel">Cancel</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- FINAL MESSAGE -->
+            <section id="final-window" class="window final-window">
+                <header class="window-titlebar">
+                    <div class="window-title">
+                        <span class="title-app-icon">!</span>
+                        BIRTHDAY.DAT
+                    </div>
+                </header>
+
+                <div class="window-body final-body">
+                    <div class="final-icon">✓</div>
+                    <div class="eyebrow">SECURITY SYSTEM</div>
+                    <h2>ACCESS GRANTED</h2>
+                    <p>Identity verified.</p>
+                    <div class="final-divider"></div>
+                    <div class="final-message">Happy Birthday, <span id="friend-name">Kevin</span>.</div>
+                    <div class="final-small">text me "It's My Birthday Hazah".</div>
+                    <div class="final-signoff">— <span id="sender-name">Ishan</span></div>
+                </div>
+            </section>
+
+            <!-- START MENU -->
+            <section id="start-menu">
+                <div class="start-banner">
+                    <strong>FRIEND</strong><span>_OS</span>
+                </div>
+                <button data-open-window="verification-window"><span>✓</span> Verification Center</button>
+                <button data-open-window="files-window"><span>▣</span> My Files</button>
+                <button data-open-window="terminal-window"><span>&gt;_</span> Terminal</button>
+                <button data-open-window="readme-window"><span>T</span> README.TXT</button>
+                <div class="menu-divider"></div>
+                <button id="shutdown-button"><span>■</span> Shut Down...</button>
+            </section>
+
+            <!-- TASKBAR -->
+            <footer id="taskbar">
+                <button id="start-button" class="start-button">
+                    <span class="start-logo">F</span> Start
+                </button>
+
+                <div id="taskbar-windows"></div>
+
+                <div id="taskbar-clock" class="taskbar-clock">00:00</div>
+            </footer>
+
+            <!-- SVG RETRO IMAGE FILTERS -->
+            <svg width="0" height="0" style="position: absolute; pointer-events: none;">
+                <filter id="retro-colors">
+                    <!-- Quantize color depth to simulate 8-bit/16-bit color palettes -->
+                    <feComponentTransfer>
+                        <feFuncR type="discrete" tableValues="0 0.16 0.33 0.5 0.66 0.83 1" />
+                        <feFuncG type="discrete" tableValues="0 0.16 0.33 0.5 0.66 0.83 1" />
+                        <feFuncB type="discrete" tableValues="0 0.2 0.4 0.6 0.8 1" />
+                    </feComponentTransfer>
+                </filter>
+            </svg>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
